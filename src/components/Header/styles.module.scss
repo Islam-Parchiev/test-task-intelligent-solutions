@@ -1,0 +1,26 @@
+.Header {
+    width: 100%;
+    height: 80px;
+    background-color: #00838f;
+}
+
+.Container {
+    max-width: 1658px;
+    padding: 0 10px;
+    margin: 0 auto;
+}
+
+.Input {
+    background-color: #fff;
+}
+
+.Wrapper {
+    width: 1025px;
+    padding-top: 10px;
+}
+
+.Form {
+    display: flex;
+    justify-content: start;
+    gap: 8px;
+}
