@@ -5,16 +5,20 @@ import { FormEvent, useState } from 'react';
 import { GET_REPOSITORIES } from '../SearchResults';
 import { useQuery } from '@apollo/client';
 import { addItems, setLoading } from '../../redux/slices/repositoriesSlice';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector, RootState } from '../../redux/store';
 const Header = () => {
-    const [search, setSearch] = useState<string | null>("");
+    const [search, setSearch] = useState<string>("");
     const dispatch = useAppDispatch();
-    const { loading, data, error } = useQuery(GET_REPOSITORIES, {
-        variables: {
-            query: search,
-            count: 8,
-        },
-    });
+    const pageCount = useAppSelector((state: RootState) => state.pagination.page)
+   
+        const { loading, data, error } = useQuery(GET_REPOSITORIES, {
+            variables: {
+                query: search,
+                count: pageCount,
+            },
+            
+        });
+    
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // console.log(e);

@@ -2,9 +2,11 @@ import { gql } from '@apollo/client';
 import { client } from '../../main';
 import { TSearchItem } from '../../types';
 import styles from './styles.module.scss';
-
+import { useAppDispatch } from '../../redux/store';
+import { addRepo } from '../../redux/slices/oneRepoSlice';
 
 const SearchItem = ({ name, primaryLanguage, forkCount, stargazers, updatedAt, owner }: TSearchItem) => {
+  const dispatch = useAppDispatch();
   const GET_ONE_REPO = gql`
    query GetOneRepo($owner:String!, $name:String!){
     repository(owner:$owner name:$name) {
@@ -37,15 +39,17 @@ const SearchItem = ({ name, primaryLanguage, forkCount, stargazers, updatedAt, o
       variables: {
         owner: owner.login,
         name: name
-
       },
     })
       .then(result => {
         // Обработайте результаты запроса
-        console.log("res", result);
+        console.log("res", result.data.repository);
+        dispatch(addRepo({...result.data.repository}));
       }).catch((e) => {
         console.log(e);
-      })
+      }).finally(() => {
+        // setLoading(false);
+      });
   }
 
   return (

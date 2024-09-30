@@ -9,7 +9,7 @@ export const client = new ApolloClient({
   uri: 'https://api.github.com/graphql',
   cache: new InMemoryCache(),
   headers: {
-    authorization: "Bearer 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",
+    authorization: "Bearer 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",
   }
 });
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { gql } from '@apollo/client';
 import { TablePagination } from '@mui/material';
 import Filters from '../Filters';
@@ -6,7 +5,8 @@ import SearchItem from '../SearchItem';
 import styles from './styles.module.scss';
 import Info from '../Info';
 // import { IResponse } from '../../types';
-import { useAppSelector, RootState } from '../../redux/store';
+import { useAppSelector, RootState, useAppDispatch } from '../../redux/store';
+import { setPage, setRowsPerPage } from '../../redux/slices/paginationSlice';
 // import { client } from '../../main';
 // import { useRepos } from '../../useRepos';
 
@@ -52,6 +52,7 @@ import { useAppSelector, RootState } from '../../redux/store';
 //         console.log(e);
 //       })
 //   }
+// eslint-disable-next-line react-refresh/only-export-components
 export const GET_REPOSITORIES =
     gql`
 query GetRepos($query:String="TODO",$count:Int=8) {
@@ -81,22 +82,29 @@ query GetRepos($query:String="TODO",$count:Int=8) {
 `;
 
 const SearchResults = () => {
-    const [page, setPage] = useState(2);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const dispatch = useAppDispatch();
+    const rowsPerPage = useAppSelector((state: RootState) => state.pagination.rowsPerPage);
+    const page = useAppSelector((state: RootState) => state.pagination.page);
+
+    // const [page, setPage] = useState(2);
+    // const [rowsPerPage, setRowsPerPage] = useState(10);
     const repos = useAppSelector((state: RootState) => state.repositories.items);
     const loading = useAppSelector((state: RootState) => state.repositories.loading);
+    const oneRepo = useAppSelector((state: RootState) => state.oneRepo.data);
     console.log('searchComp', repos);
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
         newPage: number,
     ) => {
-        setPage(newPage);
+        dispatch(setPage({ event, newPage }));
     };
     const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
     ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+        dispatch(setRowsPerPage(parseInt(event.target.value, 10)));
+        dispatch(setPage({ event: event, newPage: 0 }));
     };
     return (
         <div className={styles.Main}>
@@ -132,7 +140,14 @@ const SearchResults = () => {
                             onRowsPerPageChange={handleChangeRowsPerPage}
                         />
                     </div>
-                    <Info id={1} languages={['Python', 'Java', 'Golang']} lecensi='TestLecensi' stars='100000' name='Test' mainLanguage='Python' />
+                    {oneRepo !== null && oneRepo !== undefined ? <Info
+                        __typename={oneRepo.__typename}
+                        languages={oneRepo.languages}
+                        licenseInfo={oneRepo.licenseInfo}
+                        name={oneRepo.name}
+                        primaryLanguage={oneRepo.primaryLanguage}
+                        stargazers={oneRepo.stargazers}
+                    /> : null}
                 </div>
             </div>
         </div>
